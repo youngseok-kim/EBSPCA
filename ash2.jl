@@ -30,6 +30,8 @@ function ash2(x,s2; nv_max = 50)
         return 0, 0, 0, 0, 0, 0, 0, flag
     end
     
+    ind = unique([1;ind]);
+    
     ps2 = grid[ind];
     
     # posterior calculation

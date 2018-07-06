@@ -10,15 +10,15 @@ function update_u(X, tau, v, v2, precision_type)
     return u, u2;
 end
 
-function update_v(X, tau, u, u2, precision_type, nv)
+function update_v(X, tau, u, u2, precision_type, nv, nullprior)
     if precision_type == "columnwise_constant" || precision_type == "constant"
         s2 = 1./ (tau' * sum(u2));
     else
         s2 = 1./ (tau' * u2);
     end
     x = ((X .* tau)' * u) .* s2;
-    temp = ash(x,s2, nv = nv);
-    return temp[1], temp[2]
+    temp = ash(x,s2, nv = nv, nullprior = nullprior);
+    return temp
 end
 
 function update_tau(R2, precision_type)
