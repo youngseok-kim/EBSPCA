@@ -1,4 +1,4 @@
-function ash(x,s2; nv = 50, nullprior = 10)
+function ash(x,s2; nv = 10, nullprior = 10)
     x2 = x.^2;
     
     if length(s2) == 1
@@ -6,13 +6,13 @@ function ash(x,s2; nv = 50, nullprior = 10)
     end
     
 
-    s_max = 2 * sqrt(maximum(x2-s2));
+    s_max = 2 * maximum(x2-s2);
     ss = ceil(Int,log10(s_max))
     grid = logspace(0,ss,nv)-1;
     
     # matrix likelihood
-    s_matrix = sqrt.((s2) .+ (grid.^2)') # n by m matrix of standard deviations of convolutions
-    log_lik = -(x./s_matrix).^2/2 - log.(s_matrix) - log(2*pi)/2;
+    s_matrix = sqrt.(s2 .+ grid') # n by m matrix of standard deviations of convolutions
+    log_lik = -(x./s_matrix).^2/2 - log.(s_matrix);
     log_lik = log_lik - repmat(maximum(log_lik,2),1,size(log_lik,2));
     log_lik = exp.(log_lik);
     
@@ -22,7 +22,7 @@ function ash(x,s2; nv = 50, nullprior = 10)
     # exploit sparsity
     ind = find(p .> 0);
     ind = unique([1;ind]); # we don't need this if nullprior > 0, since the null component never gonna be 0
-    ps2 = grid[ind].^2;
+    ps2 = grid[ind];
     
     # posterior calculation
     temp = s2 .+ ps2';

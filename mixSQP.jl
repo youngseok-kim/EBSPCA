@@ -12,7 +12,7 @@ end
 # "mosek" is a sparse vector in which only the first two entries are
 # nonzero.
 function mixSQP(L; x = -1,
-                convtol = 1e-8, pqrtol = 1e-8, eps = 1e-6, sptol = 1e-3,
+                convtol = 1e-8, pqrtol = 1e-8, eps = 1e-4, sptol = 1e-4,
                 maxiter = 20, maxqpiter = 100,
                 lowrank = "svd", qpsubprob = "activeset",
                 nullprior = 10,
