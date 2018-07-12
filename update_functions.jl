@@ -5,17 +5,22 @@ function update_u(X, tau, v, v2, precision_type)
         s2 = 1./ (tau * v2);
     end
     x = ((X .* tau) * v) .* s2;
-    u = x ./ (s2 + 1);
-    u2 = u.^2 .+ (s2 ./ (s2 + 1));
-    return u, u2;
+    u = x ./ (s2/sum(x.^2) + 1);
+    u2 = u.^2 .+ (s2 ./ (s2/sum(x.^2) + 1));
+    return u, u2
 end
 
 function update_v(X, tau, u, u2, precision_type, nv, nullprior; alpha = 0)
-    if precision_type == "columnwise_constant" || precision_type == "constant"
+    if precision_type == "columnwise_constant"
         s2 = 1./ (tau' * sum(u2,1));
-    else
-        s2 = 1./ (tau' * u2);
+    elseif precision_type == "rowwise_constant"
+        s2 = repmat(1./ (tau' * u2), size(X,2), 1);
+    elseif precision_type == "constant"
+        s2 = repmat(1./ (tau' * sum(u2,1)), size(X,2), 1);
+    elseif precision_type == "elementwise"
+        s2 = s2 = 1./ (tau' * u2);
     end
+    
     x = ((X .* tau)' * u) .* s2;
     if alpha == 0
         temp = ash(x,s2, nv = nv, nullprior = nullprior);
@@ -28,11 +33,16 @@ function update_v(X, tau, u, u2, precision_type, nv, nullprior; alpha = 0)
 end
 
 function update_v_group(X, tau, u, u2, precision_type, nv, nullprior; alpha = 0)
-    if precision_type == "columnwise_constant" || precision_type == "constant"
+    if precision_type == "columnwise_constant"
         s2 = 1./ (tau' * sum(u2,1));
-    else
-        s2 = 1./ (tau' * u2);
+    elseif precision_type == "rowwise_constant"
+        s2 = repmat(1./ (tau' * u2), size(X,2), 1);
+    elseif precision_type == "constant"
+        s2 = repmat(1./ (tau' * sum(u2,1)), size(X,2), 1);
+    elseif precision_type == "elementwise"
+        s2 = s2 = 1./ (tau' * u2);
     end
+    
     x = ((X .* tau)' * u) .* s2;
     if alpha == 0
         temp = ash(x[:],s2[:], nv = nv, nullprior = nullprior);
